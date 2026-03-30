@@ -7,6 +7,7 @@ Create Date: 2026-03-30
 
 from alembic import op
 import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import ENUM
 
 
 # revision identifiers, used by Alembic.
@@ -16,10 +17,21 @@ branch_labels = None
 depends_on = None
 
 
-perfilusuario_enum = sa.Enum("ADMIN", "MECANICO", "SUPERVISOR", name="perfilusuario")
-statusveiculo_enum = sa.Enum("DISPONIVEL", "EM_MANUTENCAO", "INDISPONIVEL", name="statusveiculo")
-statusos_enum = sa.Enum("ABERTO", "EM_CHECKLIST", "EM_EXECUCAO", "FINALIZADO", name="statusordemservico")
-tipomanut_enum = sa.Enum("PREVENTIVA", "CORRETIVA", name="tipomanutencao")
+perfilusuario_enum = ENUM(
+    "ADMIN", "MECANICO", "SUPERVISOR", name="perfilusuario", create_type=False
+)
+statusveiculo_enum = ENUM(
+    "DISPONIVEL", "EM_MANUTENCAO", "INDISPONIVEL", name="statusveiculo", create_type=False
+)
+statusos_enum = ENUM(
+    "ABERTO",
+    "EM_CHECKLIST",
+    "EM_EXECUCAO",
+    "FINALIZADO",
+    name="statusordemservico",
+    create_type=False,
+)
+tipomanut_enum = ENUM("PREVENTIVA", "CORRETIVA", name="tipomanutencao", create_type=False)
 
 
 def upgrade() -> None:
