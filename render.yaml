@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: dashboardmanut-api
+    runtime: python
+    plan: starter
+    autoDeploy: true
+    buildCommand: pip install -r requirements.txt
+    startCommand: bash -c "./start.sh"
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: DATABASE_URL
+        sync: false
+      - key: SUPABASE_JWT_SECRET
+        sync: false
+      - key: APP_ENV
+        value: production
