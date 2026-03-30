@@ -5,7 +5,7 @@ services:
     plan: starter
     autoDeploy: true
     buildCommand: pip install -r requirements.txt
-    startCommand: bash -c "./start.sh"
+    startCommand: bash ./start.sh
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION

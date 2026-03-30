@@ -15,7 +15,7 @@
 
 Já configurado no `render.yaml`:
 
-`bash -c "./start.sh"`
+`bash ./start.sh`
 
 ## 4) Environment Variables
 
