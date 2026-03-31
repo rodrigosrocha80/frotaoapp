@@ -30,6 +30,23 @@ class TipoManutencao(str, Enum):
     CORRETIVA = "corretiva"
 
 
+class CategoriaEquipamento(str, Enum):
+    VEICULO = "veiculo"
+    EQUIPAMENTO = "equipamento"
+    MAQUINA = "maquina"
+    OUTRO = "outro"
+
+
+class TipoCombustivel(str, Enum):
+    GASOLINA = "gasolina"
+    DIESEL = "diesel"
+    ALCOOL = "alcool"
+    GNV = "gnv"
+    HIBRIDO = "hibrido"
+    ELETRICO = "eletrico"
+    OUTRO = "outro"
+
+
 class OSCreate(BaseModel):
     veiculo_id: int
     tipo_manutencao: TipoManutencao
@@ -97,3 +114,57 @@ class OrdemServicoOut(BaseModel):
     data_fim: Optional[datetime] = None
     km_abertura: int
     km_fechamento: Optional[int] = None
+
+
+class EquipamentoCreate(BaseModel):
+    nome: str
+    descricao: Optional[str] = None
+    categoria: CategoriaEquipamento
+    cor: Optional[str] = None
+    ano: Optional[int] = None
+    modelo: Optional[str] = None
+    renavam: Optional[str] = None
+    numero_serie: Optional[str] = None
+    chassi: Optional[str] = None
+    placa: Optional[str] = None
+    etiqueta_tag: Optional[str] = None
+    capacidade_tanque: Optional[Decimal] = None
+    tipo_combustivel: Optional[TipoCombustivel] = None
+
+
+class EquipamentoUpdate(BaseModel):
+    nome: Optional[str] = None
+    descricao: Optional[str] = None
+    categoria: Optional[CategoriaEquipamento] = None
+    cor: Optional[str] = None
+    ano: Optional[int] = None
+    modelo: Optional[str] = None
+    renavam: Optional[str] = None
+    numero_serie: Optional[str] = None
+    chassi: Optional[str] = None
+    placa: Optional[str] = None
+    etiqueta_tag: Optional[str] = None
+    capacidade_tanque: Optional[Decimal] = None
+    tipo_combustivel: Optional[TipoCombustivel] = None
+    ativo: Optional[bool] = None
+
+
+class EquipamentoOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    nome: str
+    descricao: Optional[str] = None
+    categoria: CategoriaEquipamento
+    cor: Optional[str] = None
+    ano: Optional[int] = None
+    modelo: Optional[str] = None
+    renavam: Optional[str] = None
+    numero_serie: Optional[str] = None
+    chassi: Optional[str] = None
+    placa: Optional[str] = None
+    etiqueta_tag: Optional[str] = None
+    capacidade_tanque: Optional[Decimal] = None
+    tipo_combustivel: Optional[TipoCombustivel] = None
+    ativo: bool
+    criado_em: datetime

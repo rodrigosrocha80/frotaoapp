@@ -21,3 +21,20 @@ export const perfilLabels: Record<string, string> = {
   mecanico: 'Mecânico',
   supervisor: 'Supervisor',
 }
+
+export const categoriaEquipamentoLabels: Record<string, string> = {
+  veiculo: 'Veículo',
+  equipamento: 'Equipamento',
+  maquina: 'Máquina',
+  outro: 'Outro',
+}
+
+export const tipoCombustivelLabels: Record<string, string> = {
+  gasolina: 'Gasolina',
+  diesel: 'Diesel',
+  alcool: 'Álcool',
+  gnv: 'GNV',
+  hibrido: 'Hibrido',
+  eletrico: 'Elétrico',
+  outro: 'Outro',
+}

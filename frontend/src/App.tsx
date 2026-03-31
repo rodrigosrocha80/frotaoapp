@@ -6,6 +6,8 @@ import { DetalheOS } from './pages/DetalheOS'
 import { Login } from './pages/Login'
 import { NovaOS } from './pages/NovaOS'
 import { Ordens } from './pages/Ordens'
+import { Equipamentos } from './pages/Equipamentos'
+import { CadastroEquipamento } from './pages/CadastroEquipamento'
 
 export default function App() {
   return (
@@ -17,6 +19,9 @@ export default function App() {
           <Route path="/ordens/nova" element={<NovaOS />} />
           <Route path="/ordens/:id" element={<DetalheOS />} />
           <Route path="/ordens" element={<Ordens />} />
+          <Route path="/equipamentos/novo" element={<CadastroEquipamento />} />
+          <Route path="/equipamentos/:id" element={<CadastroEquipamento />} />
+          <Route path="/equipamentos" element={<Equipamentos />} />
         </Route>
       </Route>
       <Route path="/" element={<Navigate to="/dashboard" replace />} />

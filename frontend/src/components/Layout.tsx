@@ -9,6 +9,7 @@ const nav = [
   { to: '/dashboard', label: 'Painel' },
   { to: '/ordens', label: 'Ordens de serviço' },
   { to: '/ordens/nova', label: 'Abrir OS' },
+  { to: '/equipamentos', label: 'Equipamentos' },
 ]
 
 export function Layout() {

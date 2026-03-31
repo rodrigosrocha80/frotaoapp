@@ -8,6 +8,7 @@ from fastapi.staticfiles import StaticFiles
 from app.deps import get_current_user
 from app.models import Usuario
 from app.routers.dashboard import router as dashboard_router
+from app.routers.equipamentos import router as equipamentos_router
 from app.routers.os import router as os_router
 from app.routers.veiculos import router as veiculos_router
 from app.schemas import UserOut
@@ -25,6 +26,7 @@ app.add_middleware(
 app.include_router(os_router)
 app.include_router(dashboard_router)
 app.include_router(veiculos_router)
+app.include_router(equipamentos_router)
 
 
 @app.get("/health")
@@ -53,6 +55,7 @@ async def spa_fallback_404(request: Request, _exc):
         "/dashboard",
         "/os",
         "/veiculos",
+        "/equipamentos",
         "/docs",
         "/redoc",
         "/openapi.json",

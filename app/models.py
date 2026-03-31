@@ -46,6 +46,23 @@ class TipoManutencao(str, Enum):
     CORRETIVA = "corretiva"
 
 
+class CategoriaEquipamento(str, Enum):
+    VEICULO = "veiculo"
+    EQUIPAMENTO = "equipamento"
+    MAQUINA = "maquina"
+    OUTRO = "outro"
+
+
+class TipoCombustivel(str, Enum):
+    GASOLINA = "gasolina"
+    DIESEL = "diesel"
+    ALCOOL = "alcool"
+    GNV = "gnv"
+    HIBRIDO = "hibrido"
+    ELETRICO = "eletrico"
+    OUTRO = "outro"
+
+
 class Usuario(Base):
     __tablename__ = "usuarios"
 
@@ -157,3 +174,24 @@ class ManutencaoPreventiva(Base):
     proximo_km_previsto: Mapped[Optional[int]] = mapped_column(Integer)
     proxima_data_prevista: Mapped[Optional[date]] = mapped_column(Date)
     ativo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+
+
+class Equipamento(Base):
+    __tablename__ = "equipamentos"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    nome: Mapped[str] = mapped_column(String(120), nullable=False, index=True)
+    descricao: Mapped[Optional[str]] = mapped_column(Text)
+    categoria: Mapped[CategoriaEquipamento] = mapped_column(SAEnum(CategoriaEquipamento), nullable=False, index=True)
+    cor: Mapped[Optional[str]] = mapped_column(String(50))
+    ano: Mapped[Optional[int]] = mapped_column(Integer)
+    modelo: Mapped[Optional[str]] = mapped_column(String(120))
+    renavam: Mapped[Optional[str]] = mapped_column(String(11), unique=True, index=True)
+    numero_serie: Mapped[Optional[str]] = mapped_column(String(100), unique=True, index=True)
+    chassi: Mapped[Optional[str]] = mapped_column(String(17), unique=True, index=True)
+    placa: Mapped[Optional[str]] = mapped_column(String(10), unique=True, index=True)
+    etiqueta_tag: Mapped[Optional[str]] = mapped_column(String(50), unique=True, index=True)
+    capacidade_tanque: Mapped[Optional[Decimal]] = mapped_column(Numeric(8, 2))
+    tipo_combustivel: Mapped[Optional[TipoCombustivel]] = mapped_column(SAEnum(TipoCombustivel))
+    ativo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
+    criado_em: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
