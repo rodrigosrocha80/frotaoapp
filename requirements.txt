@@ -6,3 +6,4 @@ alembic
 pydantic
 PyJWT
 psycopg2
+cryptography

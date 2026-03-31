@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: starter
     autoDeploy: true
-    buildCommand: pip install -r requirements.txt && cd frontend && npm ci && npm run build
+    buildCommand: pip install --no-cache-dir -r requirements.txt && cd frontend && npm ci && npm run build
     startCommand: bash ./start.sh
     healthCheckPath: /health
     envVars:
