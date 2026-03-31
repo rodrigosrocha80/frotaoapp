@@ -52,7 +52,7 @@ export function Login() {
           <div>
             <h1 className="text-2xl font-semibold tracking-tight text-white">FrotãoApp</h1>
             <p className="mt-1 text-sm text-slate-400">
-              Entre com sua conta ou (Solicite acesso via email: <a href="mailto:rodrigorocha@frotaoapp.com" className="text-cyan-400 hover:text-cyan-300">
+              Entre com sua conta ou (Solicite acesso via email: <a href="mailto:rodrigorocha@ccglocacao.com.br" className="text-cyan-400 hover:text-cyan-300">
                 rodrigorocha@frotaoapp.com
               </a>).
             </p>
