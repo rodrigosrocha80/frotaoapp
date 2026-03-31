@@ -7,6 +7,7 @@ from app.db import get_db
 from app.deps import require_roles
 from app.models import PerfilUsuario, Usuario
 from app.schemas import UsuarioCreate, UsuarioOut, UsuarioUpdate
+from app.services.supabase_admin import create_auth_user, update_auth_user
 
 router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
@@ -47,7 +48,10 @@ def create_usuario(
     if db.scalar(select(Usuario).where(func.lower(Usuario.email) == email_normalizado)):
         raise HTTPException(status_code=400, detail="Email já existe")
 
-    # Hash da senha
+    # Cria usuário no Supabase Auth como confirmado para permitir login imediato
+    supabase_user_id = create_auth_user(email=email_normalizado, password=usuario_data.senha)
+
+    # Hash da senha local (compatibilidade legada)
     senha_hash = bcrypt.hashpw(usuario_data.senha.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
     usuario = Usuario(
@@ -55,6 +59,7 @@ def create_usuario(
         email=email_normalizado,
         perfil=usuario_data.perfil,
         senha_hash=senha_hash,
+        supabase_user_id=supabase_user_id,
         ativo=True
     )
     db.add(usuario)
@@ -90,9 +95,19 @@ def update_usuario(
         if existing:
             raise HTTPException(status_code=400, detail="Email já existe")
         updates["email"] = email_normalizado
+    senha_plana = updates.get("senha")
+
     if "senha" in updates:
         updates["senha_hash"] = bcrypt.hashpw(updates["senha"].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         del updates["senha"]
+
+    # Sincronizar mudanças de email/senha no Supabase Auth se houver vínculo
+    if usuario.supabase_user_id and (("email" in updates and updates["email"] is not None) or senha_plana):
+        update_auth_user(
+            usuario.supabase_user_id,
+            email=updates.get("email"),
+            password=senha_plana,
+        )
 
     for field, value in updates.items():
         setattr(usuario, field, value)

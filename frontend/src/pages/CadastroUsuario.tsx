@@ -3,7 +3,6 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '../hooks/useAuth'
 import { apiJson } from '../lib/api'
 import { perfilLabels } from '../labels'
-import { supabase } from '../lib/supabase'
 
 type Usuario = {
   id: number
@@ -103,15 +102,6 @@ export function CadastroUsuario() {
           body: JSON.stringify(payload),
         })
       } else {
-        // Criar conta no Supabase Auth para permitir login após cadastro
-        const { error: supabaseError } = await supabase.auth.signUp({
-          email: emailNormalizado,
-          password: senha,
-        })
-        if (supabaseError) {
-          throw new Error(`Falha ao criar a conta de autenticação: ${supabaseError.message}`)
-        }
-
         const usuario = await apiJson<Usuario>('/usuarios', session.access_token, {
           method: 'POST',
           body: JSON.stringify(payload),

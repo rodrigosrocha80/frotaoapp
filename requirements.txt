@@ -8,3 +8,4 @@ PyJWT
 psycopg2
 cryptography
 bcrypt
+httpx
