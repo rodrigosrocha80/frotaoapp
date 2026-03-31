@@ -50,9 +50,11 @@ export function Login() {
         <div className="flex items-center gap-3">
           <img src="/caminhao-bau.png" alt="Caminhão baú Frotao" className="h-12 w-12 object-contain" />
           <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-white">Frotao</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-white">FrotãoApp</h1>
             <p className="mt-1 text-sm text-slate-400">
-              Entre com sua conta Supabase (mesmo e-mail cadastrado na API).
+              Entre com sua conta ou (Solicite acesso via email: <a href="mailto:rodrigorocha@frotaoapp.com" className="text-cyan-400 hover:text-cyan-300">
+                rodrigorocha@frotaoapp.com
+              </a>).
             </p>
           </div>
         </div>
