@@ -20,6 +20,13 @@ export type Veiculo = {
   status: string
 }
 
+export type NovoVeiculoInput = {
+  placa: string
+  modelo: string
+  km_atual: number
+  status: string
+}
+
 export type Equipamento = {
   id: number
   nome: string
@@ -39,9 +46,26 @@ export type Equipamento = {
   criado_em: string
 }
 
+export type NovoEquipamentoInput = {
+  nome: string
+  descricao?: string | null
+  categoria: string
+  cor?: string | null
+  ano?: number | null
+  modelo?: string | null
+  renavam?: string | null
+  numero_serie?: string | null
+  chassi?: string | null
+  placa?: string | null
+  etiqueta_tag?: string | null
+  capacidade_tanque?: number | null
+  tipo_combustivel?: string | null
+}
+
 export type OrdemServico = {
   id: number
-  veiculo_id: number
+  veiculo_id: number | null
+  equipamento_id: number | null
   criada_por_id: number
   responsavel_id: number | null
   tipo_manutencao: string

@@ -1,7 +1,7 @@
 from datetime import datetime
 from decimal import Decimal
 from enum import Enum
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -47,12 +47,39 @@ class TipoCombustivel(str, Enum):
     OUTRO = "outro"
 
 
+class VeiculoCreate(BaseModel):
+    placa: str
+    modelo: str
+    km_atual: int = Field(default=0, ge=0)
+    status: StatusVeiculo = StatusVeiculo.DISPONIVEL
+
+
+class EquipamentoCreate(BaseModel):
+    nome: str
+    descricao: Optional[str] = None
+    categoria: CategoriaEquipamento
+    cor: Optional[str] = None
+    ano: Optional[int] = None
+    modelo: Optional[str] = None
+    renavam: Optional[str] = None
+    numero_serie: Optional[str] = None
+    chassi: Optional[str] = None
+    placa: Optional[str] = None
+    etiqueta_tag: Optional[str] = None
+    capacidade_tanque: Optional[Decimal] = None
+    tipo_combustivel: Optional[TipoCombustivel] = None
+
+
 class OSCreate(BaseModel):
-    veiculo_id: int
+    asset_type: Literal["veiculo", "equipamento"]
+    veiculo_id: Optional[int] = None
+    equipamento_id: Optional[int] = None
+    novo_veiculo: Optional[VeiculoCreate] = None
+    novo_equipamento: Optional[EquipamentoCreate] = None
     tipo_manutencao: TipoManutencao
     descricao: str
     responsavel_id: Optional[int] = None
-    km_abertura: int = Field(ge=0)
+    km_abertura: int = Field(default=0, ge=0)
 
 
 class OSStatusUpdate(BaseModel):
@@ -102,7 +129,8 @@ class OrdemServicoOut(BaseModel):
     model_config = ConfigDict(from_attributes=True, use_enum_values=True)
 
     id: int
-    veiculo_id: int
+    veiculo_id: Optional[int] = None
+    equipamento_id: Optional[int] = None
     criada_por_id: int
     responsavel_id: Optional[int] = None
     tipo_manutencao: TipoManutencao
@@ -114,22 +142,6 @@ class OrdemServicoOut(BaseModel):
     data_fim: Optional[datetime] = None
     km_abertura: int
     km_fechamento: Optional[int] = None
-
-
-class EquipamentoCreate(BaseModel):
-    nome: str
-    descricao: Optional[str] = None
-    categoria: CategoriaEquipamento
-    cor: Optional[str] = None
-    ano: Optional[int] = None
-    modelo: Optional[str] = None
-    renavam: Optional[str] = None
-    numero_serie: Optional[str] = None
-    chassi: Optional[str] = None
-    placa: Optional[str] = None
-    etiqueta_tag: Optional[str] = None
-    capacidade_tanque: Optional[Decimal] = None
-    tipo_combustivel: Optional[TipoCombustivel] = None
 
 
 class EquipamentoUpdate(BaseModel):

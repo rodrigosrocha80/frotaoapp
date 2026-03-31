@@ -7,6 +7,7 @@ from typing import Optional
 
 from sqlalchemy import (
     Boolean,
+    CheckConstraint,
     Date,
     DateTime,
     Enum as SAEnum,
@@ -141,9 +142,21 @@ class PneuHistoricoSulco(Base):
 
 class OrdemServico(Base):
     __tablename__ = "ordens_servico"
+    __table_args__ = (
+        CheckConstraint(
+            "(veiculo_id IS NOT NULL AND equipamento_id IS NULL) OR "
+            "(veiculo_id IS NULL AND equipamento_id IS NOT NULL)",
+            name="ck_ordens_servico_target_unico",
+        ),
+    )
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    veiculo_id: Mapped[int] = mapped_column(ForeignKey("veiculos.id", ondelete="RESTRICT"), nullable=False, index=True)
+    veiculo_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("veiculos.id", ondelete="RESTRICT"), nullable=True, index=True
+    )
+    equipamento_id: Mapped[Optional[int]] = mapped_column(
+        ForeignKey("equipamentos.id", ondelete="RESTRICT"), nullable=True, index=True
+    )
     criada_por_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id", ondelete="RESTRICT"), nullable=False)
     responsavel_id: Mapped[Optional[int]] = mapped_column(ForeignKey("usuarios.id", ondelete="SET NULL"))
     tipo_manutencao: Mapped[TipoManutencao] = mapped_column(SAEnum(TipoManutencao), nullable=False)
@@ -158,7 +171,8 @@ class OrdemServico(Base):
     km_abertura: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
     km_fechamento: Mapped[Optional[int]] = mapped_column(Integer)
 
-    veiculo: Mapped[Veiculo] = relationship(back_populates="ordens_servico")
+    veiculo: Mapped[Optional[Veiculo]] = relationship(back_populates="ordens_servico")
+    equipamento: Mapped[Optional[Equipamento]] = relationship(back_populates="ordens_servico")
 
 
 class ManutencaoPreventiva(Base):
@@ -195,3 +209,5 @@ class Equipamento(Base):
     tipo_combustivel: Mapped[Optional[TipoCombustivel]] = mapped_column(SAEnum(TipoCombustivel))
     ativo: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False, index=True)
     criado_em: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+
+    ordens_servico: Mapped[list[OrdemServico]] = relationship(back_populates="equipamento")
