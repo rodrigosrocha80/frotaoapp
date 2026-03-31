@@ -5,7 +5,17 @@ export type UserMe = {
   perfil: string
 }
 
+export type Usuario = {
+  id: number
+  nome: string
+  email: string
+  perfil: string
+  ativo: boolean
+  criado_em: string
+}
+
 export type KPIResponse = {
+  mtbf_horas: number
   mtbf_horas: number
   mttr_horas: number
   disponibilidade_percentual: number
