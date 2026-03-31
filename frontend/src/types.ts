@@ -16,7 +16,6 @@ export type Usuario = {
 
 export type KPIResponse = {
   mtbf_horas: number
-  mtbf_horas: number
   mttr_horas: number
   disponibilidade_percentual: number
   custo_total_manutencao: number
