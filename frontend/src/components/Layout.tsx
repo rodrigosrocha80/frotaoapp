@@ -34,8 +34,9 @@ export function Layout() {
   return (
     <div className="flex min-h-dvh flex-col md:flex-row">
       <header className="flex items-center justify-between gap-3 border-b border-slate-800 bg-slate-900/90 px-4 py-3 md:hidden">
-        <Link to="/dashboard" className="text-lg font-semibold tracking-tight text-white">
-          Frotao
+        <Link to="/dashboard" className="flex items-center gap-2 text-lg font-semibold tracking-tight text-white">
+          <img src="/caminhao-bau.png" alt="Caminhão baú Frotao" className="h-8 w-8 object-contain" />
+          <span>Frotao</span>
         </Link>
         <button
           type="button"
@@ -53,8 +54,9 @@ export function Layout() {
         } md:flex w-full flex-col border-slate-800 bg-slate-900/95 md:w-56 md:border-r md:pt-0`}
       >
         <div className="hidden border-b border-slate-800 px-4 py-5 md:block">
-          <Link to="/dashboard" className="text-xl font-semibold tracking-tight text-white">
-            Frotao
+          <Link to="/dashboard" className="flex items-center gap-3 text-xl font-semibold tracking-tight text-white">
+            <img src="/caminhao-bau.png" alt="Caminhão baú Frotao" className="h-10 w-10 object-contain" />
+            <span>Frotão</span>
           </Link>
           <p className="mt-1 text-xs text-slate-500">Manutenção de frota</p>
         </div>

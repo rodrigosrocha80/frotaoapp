@@ -47,8 +47,15 @@ export function Login() {
   return (
     <div className="flex min-h-dvh flex-col justify-center bg-slate-950 px-4 py-10">
       <div className="mx-auto w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900/60 p-6 shadow-xl shadow-black/40 backdrop-blur">
-        <h1 className="text-2xl font-semibold tracking-tight text-white">Frotao</h1>
-        <p className="mt-1 text-sm text-slate-400">Entre com sua conta Supabase (mesmo e-mail cadastrado na API).</p>
+        <div className="flex items-center gap-3">
+          <img src="/caminhao-bau.png" alt="Caminhão baú Frotao" className="h-12 w-12 object-contain" />
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-white">Frotao</h1>
+            <p className="mt-1 text-sm text-slate-400">
+              Entre com sua conta Supabase (mesmo e-mail cadastrado na API).
+            </p>
+          </div>
+        </div>
 
         <form className="mt-8 space-y-4" onSubmit={onSubmit}>
           <div>
