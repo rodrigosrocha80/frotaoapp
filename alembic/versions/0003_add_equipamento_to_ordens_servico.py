@@ -1,6 +1,6 @@
 """allow service orders for vehicle or equipment
 
-Revision ID: 0003_add_equipamento_to_ordens_servico
+Revision ID: 0003_os_target
 Revises: 0002_add_equipamentos
 Create Date: 2026-03-31
 """
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "0003_add_equipamento_to_ordens_servico"
+revision = "0003_os_target"
 down_revision = "0002_add_equipamentos"
 branch_labels = None
 depends_on = None
