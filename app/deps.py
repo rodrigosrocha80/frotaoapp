@@ -3,10 +3,49 @@ import os
 import jwt
 from fastapi import Depends, Header, HTTPException, status
 from jwt.exceptions import InvalidTokenError
+from jwt.jwks_client import PyJWKClient
 from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.models import PerfilUsuario, Usuario
+
+_jwk_clients: dict[str, PyJWKClient] = {}
+
+
+def _get_jwk_client(url: str) -> PyJWKClient:
+    client = _jwk_clients.get(url)
+    if client is None:
+        client = PyJWKClient(url)
+        _jwk_clients[url] = client
+    return client
+
+
+def _decode_supabase_token(token: str) -> dict:
+    # 1) Tenta legado HS256 (JWT secret simétrico)
+    jwt_secret = os.getenv("SUPABASE_JWT_SECRET")
+    if jwt_secret:
+        try:
+            return jwt.decode(token, jwt_secret, algorithms=["HS256"], options={"verify_aud": False})
+        except InvalidTokenError:
+            pass
+
+    # 2) Fluxo atual do Supabase: JWT assimétrico (RS256/ES256) via JWKS
+    supabase_url = (os.getenv("SUPABASE_URL") or os.getenv("VITE_SUPABASE_URL") or "").rstrip("/")
+    if not supabase_url:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="SUPABASE_URL (ou VITE_SUPABASE_URL) ausente para validar JWT",
+        )
+
+    jwks_url = f"{supabase_url}/auth/v1/.well-known/jwks.json"
+    try:
+        signing_key = _get_jwk_client(jwks_url).get_signing_key_from_jwt(token).key
+        return jwt.decode(token, signing_key, algorithms=["RS256", "ES256"], options={"verify_aud": False})
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Token invalido: {exc}",
+        ) from exc
 
 
 def get_current_user(
@@ -17,19 +56,7 @@ def get_current_user(
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token nao informado")
 
     token = authorization.split(" ", 1)[1].strip()
-    jwt_secret = os.getenv("SUPABASE_JWT_SECRET")
-    if not jwt_secret:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="SUPABASE_JWT_SECRET ausente")
-
-    try:
-        payload = jwt.decode(token, jwt_secret, algorithms=["HS256"], options={"verify_aud": False})
-    except InvalidTokenError as exc:
-        # Debug: ajuda a diferenciar algoritmo/assinatura/expiração/etc.
-        print("JWT decode failed:", repr(exc))
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail=f"Token invalido: {exc}",
-        ) from exc
+    payload = _decode_supabase_token(token)
 
     sub = payload.get("sub")
     email = payload.get("email")
@@ -46,14 +73,12 @@ def get_current_user(
             db.refresh(user)
 
     if not user:
-        print("User not found for token sub/email:", {"sub": sub, "email": email})
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Usuario nao encontrado para o token (sub/email)",
         )
 
     if not user.ativo:
-        print("User inactive:", {"sub": sub, "email": email, "user_id": user.id})
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario inativo")
     return user
 
