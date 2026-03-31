@@ -4,6 +4,7 @@ import jwt
 from fastapi import Depends, Header, HTTPException, status
 from jwt.exceptions import InvalidTokenError
 from jwt.jwks_client import PyJWKClient
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.db import get_db
@@ -60,12 +61,14 @@ def get_current_user(
 
     sub = payload.get("sub")
     email = payload.get("email")
+    email_normalizado = email.strip().lower() if isinstance(email, str) else None
+
     if not sub:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token sem subject")
 
     user = db.query(Usuario).filter(Usuario.supabase_user_id == sub).first()
-    if not user and email:
-        user = db.query(Usuario).filter(Usuario.email == email).first()
+    if not user and email_normalizado:
+        user = db.query(Usuario).filter(func.lower(Usuario.email) == email_normalizado).first()
         if user and not user.supabase_user_id:
             user.supabase_user_id = sub
             db.add(user)

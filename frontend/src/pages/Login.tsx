@@ -34,8 +34,9 @@ export function Login() {
       setErr('Configure VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY no build.')
       return
     }
+    const emailNormalizado = email.trim().toLowerCase()
     setBusy(true)
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { error } = await supabase.auth.signInWithPassword({ email: emailNormalizado, password })
     setBusy(false)
     if (error) {
       setErr(error.message)

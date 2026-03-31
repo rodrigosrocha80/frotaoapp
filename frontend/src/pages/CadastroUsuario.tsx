@@ -57,6 +57,8 @@ export function CadastroUsuario() {
     setBusy(true)
 
     try {
+      const emailNormalizado = email.trim().toLowerCase()
+
       // Validações
       if (!isEdit && senha !== confirmarSenha) {
         setErr('As senhas não coincidem')
@@ -72,7 +74,7 @@ export function CadastroUsuario() {
 
       const payload: any = {
         nome,
-        email,
+        email: emailNormalizado,
         perfil,
       }
 
@@ -103,7 +105,7 @@ export function CadastroUsuario() {
       } else {
         // Criar conta no Supabase Auth para permitir login após cadastro
         const { error: supabaseError } = await supabase.auth.signUp({
-          email,
+          email: emailNormalizado,
           password: senha,
         })
         if (supabaseError) {

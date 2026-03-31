@@ -1,6 +1,6 @@
 import bcrypt
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.db import get_db
@@ -40,8 +40,11 @@ def create_usuario(
     _=Depends(require_roles(PerfilUsuario.ADMIN)),
 ):
     """Criar um novo usuário (apenas admin)"""
-    # Validar unicidade do email
-    if db.scalar(select(Usuario).where(Usuario.email == usuario_data.email)):
+    # Normalizar e-mail para manter consistência com Supabase/Auth
+    email_normalizado = usuario_data.email.strip().lower()
+
+    # Validar unicidade do email (case-insensitive)
+    if db.scalar(select(Usuario).where(func.lower(Usuario.email) == email_normalizado)):
         raise HTTPException(status_code=400, detail="Email já existe")
 
     # Hash da senha
@@ -49,7 +52,7 @@ def create_usuario(
 
     usuario = Usuario(
         nome=usuario_data.nome,
-        email=usuario_data.email,
+        email=email_normalizado,
         perfil=usuario_data.perfil,
         senha_hash=senha_hash,
         ativo=True
@@ -72,19 +75,21 @@ def update_usuario(
     if not usuario:
         raise HTTPException(status_code=404, detail="Usuário não encontrado")
 
-    # Validar unicidade do email em atualização
-    if usuario_data.email and usuario_data.email != usuario.email:
+    # Atualizar campos
+    updates = usuario_data.model_dump(exclude_unset=True)
+
+    # Normalizar e validar unicidade do email em atualização (case-insensitive)
+    if "email" in updates and updates["email"] is not None:
+        email_normalizado = updates["email"].strip().lower()
         existing = db.scalar(
             select(Usuario).where(
-                Usuario.email == usuario_data.email,
+                func.lower(Usuario.email) == email_normalizado,
                 Usuario.id != usuario_id
             )
         )
         if existing:
             raise HTTPException(status_code=400, detail="Email já existe")
-
-    # Atualizar campos
-    updates = usuario_data.model_dump(exclude_unset=True)
+        updates["email"] = email_normalizado
     if "senha" in updates:
         updates["senha_hash"] = bcrypt.hashpw(updates["senha"].encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
         del updates["senha"]
