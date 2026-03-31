@@ -115,6 +115,32 @@ class UserOut(BaseModel):
     perfil: PerfilUsuario
 
 
+class UsuarioCreate(BaseModel):
+    nome: str
+    email: str
+    perfil: PerfilUsuario
+    senha: str
+
+
+class UsuarioUpdate(BaseModel):
+    nome: Optional[str] = None
+    email: Optional[str] = None
+    perfil: Optional[PerfilUsuario] = None
+    senha: Optional[str] = None
+    ativo: Optional[bool] = None
+
+
+class UsuarioOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    nome: str
+    email: str
+    perfil: PerfilUsuario
+    ativo: bool
+    criado_em: datetime
+
+
 class VeiculoOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

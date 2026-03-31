@@ -12,6 +12,10 @@ const nav = [
   { to: '/equipamentos', label: 'Equipamentos' },
 ]
 
+const adminNav = [
+  { to: '/usuarios', label: 'Usuários' },
+]
+
 export function Layout() {
   const { session, signOut } = useAuth()
   const [open, setOpen] = useState(false)
@@ -56,13 +60,18 @@ export function Layout() {
         <div className="hidden border-b border-slate-800 px-4 py-5 md:block">
           <Link to="/dashboard" className="flex items-center gap-3 text-xl font-semibold tracking-tight text-white">
             <img src="/caminhao-bau.png" alt="Caminhão baú Frotao" className="h-10 w-10 object-contain" />
-            <span>Frotão</span>
+            <span>FrotãoApp</span>
           </Link>
-          <p className="mt-1 text-xs text-slate-500">Manutenção de frota</p>
+          <p className="mt-1 text-xs text-slate-500">Gestão da Manutenção de Frota</p>
         </div>
         <nav className="flex flex-1 flex-col gap-1 p-3">
           {nav.map((item) => (
             <NavLink key={item.to} to={item.to} className={linkClass} onClick={() => setOpen(false)} end={item.to === '/ordens'}>
+              {item.label}
+            </NavLink>
+          ))}
+          {me?.perfil === 'admin' && adminNav.map((item) => (
+            <NavLink key={item.to} to={item.to} className={linkClass} onClick={() => setOpen(false)} end>
               {item.label}
             </NavLink>
           ))}

@@ -10,6 +10,7 @@ from app.models import Usuario
 from app.routers.dashboard import router as dashboard_router
 from app.routers.equipamentos import router as equipamentos_router
 from app.routers.os import router as os_router
+from app.routers.usuarios import router as usuarios_router
 from app.routers.veiculos import router as veiculos_router
 from app.schemas import UserOut
 
@@ -27,6 +28,7 @@ app.include_router(os_router)
 app.include_router(dashboard_router)
 app.include_router(veiculos_router)
 app.include_router(equipamentos_router)
+app.include_router(usuarios_router)
 
 
 @app.get("/health")
@@ -56,6 +58,7 @@ async def spa_fallback_404(request: Request, _exc):
         "/os",
         "/veiculos",
         "/equipamentos",
+        "/usuarios",
         "/docs",
         "/redoc",
         "/openapi.json",
