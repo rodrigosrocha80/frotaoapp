@@ -24,7 +24,12 @@ def get_current_user(
     try:
         payload = jwt.decode(token, jwt_secret, algorithms=["HS256"], options={"verify_aud": False})
     except InvalidTokenError as exc:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalido") from exc
+        # Debug: ajuda a diferenciar algoritmo/assinatura/expiração/etc.
+        print("JWT decode failed:", repr(exc))
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Token invalido: {exc}",
+        ) from exc
 
     sub = payload.get("sub")
     email = payload.get("email")
@@ -40,8 +45,16 @@ def get_current_user(
             db.commit()
             db.refresh(user)
 
-    if not user or not user.ativo:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario invalido")
+    if not user:
+        print("User not found for token sub/email:", {"sub": sub, "email": email})
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Usuario nao encontrado para o token (sub/email)",
+        )
+
+    if not user.ativo:
+        print("User inactive:", {"sub": sub, "email": email, "user_id": user.id})
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Usuario inativo")
     return user
 
 
