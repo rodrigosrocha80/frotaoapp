@@ -3,7 +3,7 @@ from decimal import Decimal
 from enum import Enum
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class PerfilUsuario(str, Enum):
@@ -60,3 +60,40 @@ class KPIResponse(BaseModel):
     mttr_horas: float
     disponibilidade_percentual: float
     custo_total_manutencao: float
+
+
+class UserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    nome: str
+    email: str
+    perfil: PerfilUsuario
+
+
+class VeiculoOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    placa: str
+    modelo: str
+    km_atual: int
+    status: StatusVeiculo
+
+
+class OrdemServicoOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True, use_enum_values=True)
+
+    id: int
+    veiculo_id: int
+    criada_por_id: int
+    responsavel_id: Optional[int] = None
+    tipo_manutencao: TipoManutencao
+    status: StatusOrdemServico
+    descricao: str
+    custo_total: Decimal
+    data_abertura: datetime
+    data_inicio: Optional[datetime] = None
+    data_fim: Optional[datetime] = None
+    km_abertura: int
+    km_fechamento: Optional[int] = None

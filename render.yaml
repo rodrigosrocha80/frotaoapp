@@ -4,7 +4,7 @@ services:
     runtime: python
     plan: starter
     autoDeploy: true
-    buildCommand: pip install -r requirements.txt
+    buildCommand: pip install -r requirements.txt && cd frontend && npm ci && npm run build
     startCommand: bash ./start.sh
     healthCheckPath: /health
     envVars:
@@ -16,3 +16,9 @@ services:
         sync: false
       - key: APP_ENV
         value: production
+      - key: NODE_VERSION
+        value: 20.18.0
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false

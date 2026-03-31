@@ -1,18 +1,48 @@
 from datetime import datetime
+from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.db import get_db
 from app.deps import get_current_user, require_roles
 from app.models import OrdemServico, PerfilUsuario, StatusOrdemServico, TipoManutencao, Usuario, Veiculo
-from app.schemas import OSCreate, OSFinalizarInput, OSStatusUpdate
+from app.schemas import OSCreate, OSFinalizarInput, OrdemServicoOut, OSStatusUpdate
 from app.services.os_service import finalizar_ordem_servico
 
 router = APIRouter(prefix="/os", tags=["ordens-servico"])
 
 
-@router.post("/abrir")
+@router.get("", response_model=list[OrdemServicoOut])
+def list_os(
+    db: Session = Depends(get_db),
+    status_filter: Optional[str] = Query(None, alias="status"),
+    _=Depends(require_roles(PerfilUsuario.ADMIN, PerfilUsuario.MECANICO, PerfilUsuario.SUPERVISOR)),
+):
+    q = select(OrdemServico).order_by(OrdemServico.id.desc())
+    if status_filter:
+        try:
+            st = StatusOrdemServico(status_filter)
+        except ValueError as exc:
+            raise HTTPException(status_code=400, detail="Status invalido") from exc
+        q = q.where(OrdemServico.status == st)
+    return db.scalars(q).all()
+
+
+@router.get("/{os_id}", response_model=OrdemServicoOut)
+def get_os(
+    os_id: int,
+    db: Session = Depends(get_db),
+    _=Depends(require_roles(PerfilUsuario.ADMIN, PerfilUsuario.MECANICO, PerfilUsuario.SUPERVISOR)),
+):
+    os_obj = db.get(OrdemServico, os_id)
+    if not os_obj:
+        raise HTTPException(status_code=404, detail="OS nao encontrada")
+    return os_obj
+
+
+@router.post("/abrir", response_model=OrdemServicoOut)
 def abrir_os(
     payload: OSCreate,
     db: Session = Depends(get_db),
@@ -38,7 +68,7 @@ def abrir_os(
     return os_obj
 
 
-@router.patch("/{os_id}/status")
+@router.patch("/{os_id}/status", response_model=OrdemServicoOut)
 def atualizar_status_os(
     os_id: int,
     payload: OSStatusUpdate,
@@ -57,7 +87,7 @@ def atualizar_status_os(
     return os_obj
 
 
-@router.post("/{os_id}/finalizar")
+@router.post("/{os_id}/finalizar", response_model=OrdemServicoOut)
 def finalizar_os(
     os_id: int,
     payload: OSFinalizarInput,
