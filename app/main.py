@@ -1,7 +1,8 @@
 from pathlib import Path
 
-from fastapi import Depends, FastAPI
+from fastapi import Depends, FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.deps import get_current_user
@@ -39,3 +40,24 @@ def me(user: Usuario = Depends(get_current_user)):
 _frontend_dist = Path(__file__).resolve().parent.parent / "frontend" / "dist"
 if _frontend_dist.is_dir():
     app.mount("/", StaticFiles(directory=str(_frontend_dist), html=True), name="spa")
+
+
+@app.exception_handler(404)
+async def spa_fallback_404(request: Request, _exc):
+    if not _frontend_dist.is_dir():
+        return JSONResponse(status_code=404, content={"detail": "Not Found"})
+
+    api_prefixes = (
+        "/health",
+        "/me",
+        "/dashboard",
+        "/os",
+        "/veiculos",
+        "/docs",
+        "/redoc",
+        "/openapi.json",
+    )
+    if request.url.path.startswith(api_prefixes):
+        return JSONResponse(status_code=404, content={"detail": "Not Found"})
+
+    return FileResponse(_frontend_dist / "index.html")
